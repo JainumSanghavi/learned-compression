@@ -3,28 +3,31 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class ConvAutoencoder(nn.Module):
-    def __init__(self):
+    def __init__(self, input_channels = 3):
         super(ConvAutoencoder, self).__init__()
 
         # Encoder
         self.encoder = nn.Sequential(
-          # nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1),  # -> (16, 14, 14)
-            nn.Conv2d(3, 16, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(input_channels, 64, kernel_size=4, stride=2, padding=1),  # 64x64 -> 32x32
             nn.ReLU(),
-            nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1),  # -> (32, 7, 7)
+            nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),  # 32x32 -> 16x16
             nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=0),  # -> (64, 3, 3)
+            nn.Conv2d(128, 256, kernel_size=4, stride=2, padding=1),  # 16x16 -> 8x8
+            nn.ReLU(),
+            nn.Conv2d(256, 512, kernel_size=4, stride=2, padding=1),  # 8x8 -> 4x4
             nn.ReLU()
         )
 
         # Decoder
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2),     # -> (32, 7, 7)
+             nn.ConvTranspose2d(512, 256, kernel_size=4, stride=2, padding=1),  # 4x4 -> 8x8
             nn.ReLU(),
-            nn.ConvTranspose2d(32, 16, kernel_size=3, stride=2, padding=1, output_padding=1),  # -> (16, 14, 14)
+            nn.ConvTranspose2d(256, 128, kernel_size=4, stride=2, padding=1),  # 8x8 -> 16x16
             nn.ReLU(),
-            nn.ConvTranspose2d(16, 1, kernel_size=3, stride=2, padding=1, output_padding=1),   # -> (1, 28, 28)
-            nn.Sigmoid()  # To keep pixel values in [0, 1]
+            nn.ConvTranspose2d(128, 64, kernel_size=4, stride=2, padding=1),  # 16x16 -> 32x32
+            nn.ReLU(),
+            nn.ConvTranspose2d(64, input_channels, kernel_size=4, stride=2, padding=1),  # 32x32 -> 64x64
+            nn.Sigmoid()
         )
 
     def forward(self, x):
