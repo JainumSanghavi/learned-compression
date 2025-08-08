@@ -39,7 +39,27 @@ def get_dataloaders(batch_size=128):
     return train_loader, test_loader
 
 def show_reconstruction(original, reconstructed, n=6):
-    pass
+    """
+    Plots original and reconstructed images side by side.
+    """
+    plt.figure(figsize=(12, 4))
+    for i in range(n):
+        # Original
+        plt.subplot(2, n, i + 1)
+        plt.imshow(original[i].squeeze(), cmap='gray')
+        plt.axis('off')
+        if i == 0:
+            plt.title("Original")
+
+        # Reconstructed
+        plt.subplot(2, n, i + 1 + n)
+        plt.imshow(reconstructed[i].squeeze(), cmap='gray')
+        plt.axis('off')
+        if i == 0:
+            plt.title("Reconstructed")
+
+    plt.tight_layout()
+    plt.show()
 
 def save_reconstruction(original, reconstructed, path, n=6):
 
