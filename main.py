@@ -30,12 +30,13 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate,weight_decay=1e-5)
 #adding a scheduler
 scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, factor=0.5)
 
-# Training loop
+
+# Training loop - completely updated for tensorbaord.
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
 
-    for images, _ in train_loader:
+    for batch_idx, (images, _) in enumerate(train_loader):
         images = images.to(device)
 
         # Forward
@@ -49,9 +50,28 @@ for epoch in range(num_epochs):
 
         running_loss += loss.item()
 
+        # Log batch loss
+        if batch_idx % 50 == 0:
+            writer.add_scalar('Loss/train_batch', loss.item(), epoch * len(train_loader) + batch_idx)
+
     avg_loss = running_loss / len(train_loader)
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+    writer.add_scalar('Loss/train', avg_loss, epoch)
+    scheduler.step(avg_loss)
 
+    # Validation
+    if (epoch + 1) % 5 == 0:
+        model.eval()
+        val_loss = 0.0
+        with torch.no_grad():
+            for images, _ in test_loader:
+                images = images.to(device)
+                outputs = model(images)
+                val_loss += criterion(outputs, images).item()
+
+        avg_val_loss = val_loss / len(test_loader)
+        print(f"Validation Loss: {avg_val_loss:.4f}")
+        writer.add_scalar('Loss/val', avg_val_loss, epoch)
 
 # Evaluation
 model.eval()
