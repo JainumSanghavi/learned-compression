@@ -43,3 +43,26 @@ for epoch in range(num_epochs):
 
     avg_loss = running_loss / len(train_loader)
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+
+# Evaluation
+model.eval()
+test_images, _ = next(iter(test_loader))
+test_images = test_images.to(device)
+with torch.no_grad():
+    reconstructed = model(test_images)
+
+# Compute PSNR for first batch
+mse = nn.functional.mse_loss(reconstructed, test_images)
+psnr = calculate_psnr(mse)
+print(f"Test MSE: {mse.item():.4f}, PSNR: {psnr:.2f} dB")
+
+# Visualize results
+show_reconstruction(test_images.cpu(), reconstructed.cpu(), n=6)
+
+# Save reconstruction comparison
+save_reconstruction(test_images.cpu(), reconstructed.cpu(), os.path.join(save_dir, "reconstruction.png"))
+
+# Save model
+os.makedirs(os.path.join(save_dir, "checkpoints"), exist_ok=True)
+torch.save(model.state_dict(), os.path.join(save_dir, "checkpoints", "cae_mnist.pth"))
