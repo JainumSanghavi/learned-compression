@@ -46,14 +46,19 @@ def show_reconstruction(original, reconstructed, n=6):
     for i in range(n):
         # Original
         plt.subplot(2, n, i + 1)
-        plt.imshow(original[i].squeeze(), cmap='gray')
+
+        orig_img = original[i].permute(1, 2, 0).numpy()
+        plt.imshow(orig_img)
+
         plt.axis('off')
         if i == 0:
             plt.title("Original")
 
         # Reconstructed
         plt.subplot(2, n, i + 1 + n)
-        plt.imshow(reconstructed[i].squeeze(), cmap='gray')
+
+        recon_img = reconstructed[i].permute(1, 2, 0).numpy()
+        plt.imshow(recon_img)
         plt.axis('off')
         if i == 0:
             plt.title("Reconstructed")
@@ -70,11 +75,11 @@ def save_reconstruction(original, reconstructed, path, n=6):
     plt.figure(figsize=(12, 4))
     for i in range(n):
         plt.subplot(2, n, i + 1)
-        plt.imshow(original[i].squeeze(), cmap='gray')
+        plt.imshow(original[i].permute(1, 2, 0).numpy())       
         plt.axis('off')
 
         plt.subplot(2, n, i + 1 + n)
-        plt.imshow(reconstructed[i].squeeze(), cmap='gray')
+        plt.imshow(reconstructed[i].permute(1, 2, 0).numpy())        
         plt.axis('off')
 
     plt.tight_layout()
