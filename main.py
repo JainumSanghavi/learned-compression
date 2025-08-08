@@ -16,3 +16,30 @@ save_dir = "outputs"
 
 # Load data
 train_loader, test_loader = get_celeba_loaders(batch_size=batch_size)
+
+# Initialize model, loss, optimizer
+model = ConvAutoencoder().to(device)
+criterion = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+# Training loop
+for epoch in range(num_epochs):
+    model.train()
+    running_loss = 0.0
+
+    for images, _ in train_loader:
+        images = images.to(device)
+
+        # Forward
+        outputs = model(images)
+        loss = criterion(outputs, images)
+
+        # Backward
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+
+    avg_loss = running_loss / len(train_loader)
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
