@@ -4,7 +4,8 @@ import torch.optim as optim
 from model import ConvAutoencoder
 from utils import get_dataloaders, show_reconstruction, save_reconstruction, calculate_psnr,get_celeba_loaders
 import os
-
+from torch.utils.tensorboard import SummaryWriter
+from datetime import datetime
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -13,14 +14,21 @@ num_epochs = 10
 batch_size = 128
 learning_rate = 1e-3
 save_dir = "outputs"
+image_size = 64
+
+# Setup TensorBoard
+log_dir = os.path.join(save_dir, "logs", datetime.now().strftime("%Y%m%d_%H%M%S"))
+writer = SummaryWriter(log_dir)
 
 # Load data
-train_loader, test_loader = get_celeba_loaders(batch_size=batch_size)
+train_loader, test_loader = get_celeba_loaders(batch_size=batch_size, image_size=image_size)
 
 # Initialize model, loss, optimizer
-model = ConvAutoencoder().to(device)
+model = ConvAutoencoder(input_channels=3).to(device)
 criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = optim.Adam(model.parameters(), lr=learning_rate,weight_decay=1e-5)
+#adding a scheduler
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, factor=0.5)
 
 # Training loop
 for epoch in range(num_epochs):
