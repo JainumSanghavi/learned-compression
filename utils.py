@@ -13,8 +13,8 @@ def get_celeba_loaders(batch_size=128, image_size=64):
         transforms.Resize((image_size, image_size)),
         transforms.ToTensor(),
     ])
-    train_dataset = CelebA(root='./data', split='train', download=True, transform=transform)
-    test_dataset  = CelebA(root='./data', split='test',  download=True, transform=transform)
+    train_dataset = CelebA(root='./data', split='train', download=False, transform=transform)
+    test_dataset  = CelebA(root='./data', split='test',  download=False, transform=transform)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
@@ -30,8 +30,8 @@ def get_dataloaders(batch_size=128):
     """
     transform = transforms.ToTensor()
 
-    train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
-    test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+    train_dataset = datasets.MNIST(root='./data', train=True, download=False, transform=transform)
+    test_dataset = datasets.MNIST(root='./data', train=False, download=False, transform=transform)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
