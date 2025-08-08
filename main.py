@@ -94,3 +94,4 @@ save_reconstruction(test_images.cpu(), reconstructed.cpu(), os.path.join(save_di
 # Save model
 os.makedirs(os.path.join(save_dir, "checkpoints"), exist_ok=True)
 torch.save(model.state_dict(), os.path.join(save_dir, "checkpoints", "cae_mnist.pth"))
+writer.close()
