@@ -9,7 +9,18 @@ from torchvision import transforms
 
 #high level design
 def get_celeba_loaders(batch_size=128, image_size=64):
-    pass
+    transform = transforms.Compose([
+        transforms.Resize((image_size, image_size)),
+        transforms.ToTensor(),
+    ])
+    train_dataset = CelebA(root='./data', split='train', download=True, transform=transform)
+    test_dataset  = CelebA(root='./data', split='test',  download=True, transform=transform)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, test_loader
+
 
 
 
