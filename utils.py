@@ -63,6 +63,24 @@ def show_reconstruction(original, reconstructed, n=6):
 
 def save_reconstruction(original, reconstructed, path, n=6):
 
-    pass
+    """
+    Saves original and reconstructed images as a single comparison plot.
+    """
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    plt.figure(figsize=(12, 4))
+    for i in range(n):
+        plt.subplot(2, n, i + 1)
+        plt.imshow(original[i].squeeze(), cmap='gray')
+        plt.axis('off')
+
+        plt.subplot(2, n, i + 1 + n)
+        plt.imshow(reconstructed[i].squeeze(), cmap='gray')
+        plt.axis('off')
+
+    plt.tight_layout()
+    plt.savefig(path)
+    plt.close()
+
+    
 def calculate_psnr(mse, max_pixel=1.0):
     pass
