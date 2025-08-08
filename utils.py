@@ -81,6 +81,11 @@ def save_reconstruction(original, reconstructed, path, n=6):
     plt.savefig(path)
     plt.close()
 
-    
+
 def calculate_psnr(mse, max_pixel=1.0):
-    pass
+    """
+    Calculates PSNR (Peak Signal-to-Noise Ratio) from MSE.
+    """
+    if mse == 0:
+        return float('inf')
+    return 20 * torch.log10(max_pixel / torch.sqrt(mse))
