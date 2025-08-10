@@ -11,7 +11,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
 num_epochs = 10
-batch_size = 128
+batch_size = 256
 learning_rate = 1e-3
 save_dir = "outputs"
 image_size = 64
@@ -37,6 +37,7 @@ for epoch in range(num_epochs):
     running_loss = 0.0
 
     for batch_idx, (images, _) in enumerate(train_loader):
+        print("hello")
         images = images.to(device)
 
         # Forward
