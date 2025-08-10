@@ -37,7 +37,7 @@ for epoch in range(num_epochs):
     running_loss = 0.0
 
     for batch_idx, (images, _) in enumerate(train_loader):
-        print("hello")
+        print(batch_idx)
         images = images.to(device)
 
         # Forward

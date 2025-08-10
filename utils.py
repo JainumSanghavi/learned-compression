@@ -8,17 +8,35 @@ from torchvision import transforms
 
 
 #high level design
-def get_celeba_loaders(batch_size=128, image_size=64):
+# def get_celeba_loaders(batch_size=128, image_size=64):
+#     transform = transforms.Compose([
+#         transforms.Resize((image_size, image_size)),
+#         transforms.ToTensor(),
+#     ])
+#     train_dataset = CelebA(root='./data', split='train', download=False, transform=transform)
+#     test_dataset  = CelebA(root='./data', split='test',  download=False, transform=transform)
+
+#     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+#     test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+#     return train_loader, test_loader
+
+def get_celeba_loaders(batch_size=128, image_size=64, max_samples=40000):
     transform = transforms.Compose([
         transforms.Resize((image_size, image_size)),
         transforms.ToTensor(),
     ])
-    train_dataset = CelebA(root='./data', split='train', download=False, transform=transform)
-    test_dataset  = CelebA(root='./data', split='test',  download=False, transform=transform)
-
+    
+    full_train = CelebA(root='./data', split='train', download=False, transform=transform)
+    full_test = CelebA(root='./data', split='test', download=False, transform=transform)
+    
+    # Use at most max_samples
+    train_dataset = torch.utils.data.Subset(full_train, range(min(max_samples, len(full_train))))
+    test_dataset = torch.utils.data.Subset(full_test, range(min(max_samples//5, len(full_test))))
+    
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    
     return train_loader, test_loader
 
 
