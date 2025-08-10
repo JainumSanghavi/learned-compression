@@ -4,22 +4,21 @@ import torch.optim as optim
 from model import ConvAutoencoder
 from utils import get_dataloaders, show_reconstruction, save_reconstruction, calculate_psnr,get_celeba_loaders
 import os
-from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 # Set device
 # Set device (automatically handles CUDA/MPS/CPU)
-# if torch.cuda.is_available():
-#     device = torch.device("cuda")
+if torch.cuda.is_available():
+    device = torch.device("cuda")
 
 #currently using MPS
-if torch.backends.mps.is_available():  # macOS Metal Performance Shaders
+elif torch.backends.mps.is_available():  # macOS Metal Performance Shaders
     device = torch.device("mps")
 else:
     device = torch.device("cpu")
 print(f"Using device: {device}")
 
 # Hyperparameters
-num_epochs = 10
+num_epochs = 20
 batch_size = 256
 learning_rate = 1e-3
 save_dir = "outputs"
@@ -27,7 +26,7 @@ image_size = 64
 
 # Setup TensorBoard
 log_dir = os.path.join(save_dir, "logs", datetime.now().strftime("%Y%m%d_%H%M%S"))
-writer = SummaryWriter(log_dir)
+
 
 # Load data
 train_loader, test_loader = get_celeba_loaders(batch_size=batch_size, image_size=image_size)
@@ -60,13 +59,10 @@ for epoch in range(num_epochs):
 
         running_loss += loss.item()
 
-        # Log batch loss
-        if batch_idx % 50 == 0:
-            writer.add_scalar('Loss/train_batch', loss.item(), epoch * len(train_loader) + batch_idx)
+      
 
     avg_loss = running_loss / len(train_loader)
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
-    writer.add_scalar('Loss/train', avg_loss, epoch)
     scheduler.step(avg_loss)
 
     # Validation
@@ -81,8 +77,7 @@ for epoch in range(num_epochs):
 
         avg_val_loss = val_loss / len(test_loader)
         print(f"Validation Loss: {avg_val_loss:.4f}")
-        writer.add_scalar('Loss/val', avg_val_loss, epoch)
-
+        
 # Evaluation
 model.eval()
 test_images, _ = next(iter(test_loader))
@@ -104,4 +99,3 @@ save_reconstruction(test_images.cpu(), reconstructed.cpu(), os.path.join(save_di
 # Save model
 os.makedirs(os.path.join(save_dir, "checkpoints"), exist_ok=True)
 torch.save(model.state_dict(), os.path.join(save_dir, "checkpoints", "cae_mnist.pth"))
-writer.close()
