@@ -7,7 +7,16 @@ import os
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 # Set device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Set device (automatically handles CUDA/MPS/CPU)
+# if torch.cuda.is_available():
+#     device = torch.device("cuda")
+
+#currently using MPS
+if torch.backends.mps.is_available():  # macOS Metal Performance Shaders
+    device = torch.device("mps")
+else:
+    device = torch.device("cpu")
+print(f"Using device: {device}")
 
 # Hyperparameters
 num_epochs = 10
