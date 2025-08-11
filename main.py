@@ -1,3 +1,17 @@
+
+'''
+This main training script trains and evaluates a Convolutional Autoencoder on the CelebA 
+dataset for image compression and reconstruction. It begins by automatically selecting the
+ best available compute device (CUDA GPU, Apple MPS, or CPU) and setting core hyperparameters 
+ such as learning rate, batch size, and number of epochs. It loads preprocessed CelebA data, 
+ initializes the autoencoder model, mean squared error loss function, Adam optimizer, and a
+   learning rate scheduler that reduces the LR when loss plateaus. The script then runs a multi-epoch 
+   training loop where the model learns to reconstruct input images, periodically evaluating on a 
+   validation set to monitor performance. After training, it tests the model on unseen data, computes 
+   reconstruction quality using PSNR, and visualizes results by saving side-by-side original and 
+   reconstructed images. Finally, it saves the trained model weights and output images to disk,
+     making the pipeline reproducible and ready for further fine-tuning or deployment.
+'''
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -17,18 +31,20 @@ else:
     device = torch.device("cpu")
 print(f"Using device: {device}")
 
-# Hyperparameters
-num_epochs = 20
-batch_size = 256
-learning_rate = 1e-3
-save_dir = "outputs"
-image_size = 64
+# Hyperparameter
+num_epochs = 50        # Number of times we iterate over the training set
+batch_size = 256       # Number of images per mini-batch
+learning_rate = 1e-3   # Initial learning rate for optimizer
+save_dir = "outputs"   # Directory to store model outputs & logs
+image_size = 64        # Resize CelebA images to 64x64 for training
 
 # Setup TensorBoard
-log_dir = os.path.join(save_dir, "logs", datetime.now().strftime("%Y%m%d_%H%M%S"))
+#log_dir = os.path.join(save_dir, "logs", datetime.now().strftime("%Y%m%d_%H%M%S"))
 
 
-# Load data
+
+# Load CelebA dataset
+# Returns DataLoader objects for training and testing
 train_loader, test_loader = get_celeba_loaders(batch_size=batch_size, image_size=image_size)
 
 # Initialize model, loss, optimizer
