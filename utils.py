@@ -21,7 +21,7 @@ from torchvision import transforms
 
 #     return train_loader, test_loader
 
-def get_celeba_loaders(batch_size=128, image_size=64, max_samples=100000):
+def get_celeba_loaders(batch_size=128, image_size=64, max_samples=10000):
     transform = transforms.Compose([
         transforms.Resize((image_size, image_size)),
         transforms.ToTensor(),
