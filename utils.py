@@ -7,20 +7,23 @@ from torchvision.datasets import CelebA
 from torchvision import transforms
 
 
-#high level design
-# def get_celeba_loaders(batch_size=128, image_size=64):
-#     transform = transforms.Compose([
-#         transforms.Resize((image_size, image_size)),
-#         transforms.ToTensor(),
-#     ])
-#     train_dataset = CelebA(root='./data', split='train', download=False, transform=transform)
-#     test_dataset  = CelebA(root='./data', split='test',  download=False, transform=transform)
 
-#     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-#     test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+"""
+    Loads the CelebA dataset and returns train and test DataLoaders with optional subsampling.
 
-#     return train_loader, test_loader
+    Args:
+        batch_size (int): Number of images per batch for the DataLoader.
+        image_size (int): Target size (height, width) to resize all images.
+        max_samples (int): Maximum number of samples to load from the dataset for faster experiments.
 
+    Returns:
+        tuple: (train_loader, test_loader) where each is a PyTorch DataLoader.
+
+    Processing steps:
+        1. Resizes each image to `image_size` × `image_size`.
+        2. Converts images to PyTorch tensors.
+        3. Optionally truncates dataset to at most `max_samples` for training and `max_samples//5` for testing.
+    """
 def get_celeba_loaders(batch_size=128, image_size=64, max_samples=10000):
     transform = transforms.Compose([
         transforms.Resize((image_size, image_size)),
@@ -40,7 +43,19 @@ def get_celeba_loaders(batch_size=128, image_size=64, max_samples=10000):
     return train_loader, test_loader
 
 
+"""
+    Loads MNIST dataset and returns train and test DataLoaders.
 
+    Args:
+        batch_size (int): Number of images per batch.
+
+    Returns:
+        tuple: (train_loader, test_loader) where each is a PyTorch DataLoader.
+
+    Notes:
+        - This is a simple baseline loader, unlike CelebA loader which supports resizing and subsampling.
+        - MNIST is grayscale (1 channel) and images are already 28×28.
+    """
 
 def get_dataloaders(batch_size=128):
     """
